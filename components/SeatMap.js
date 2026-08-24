@@ -240,14 +240,14 @@ export default function SeatMap({ eventId }) {
                 return (
                   <span
                     key={cp.category}
-                    className="inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs"
+                    className="inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-xs"
                     style={{
                       borderColor: categoryColor[cp.category],
                       background: `color-mix(in srgb, ${categoryColor[cp.category]} 10%, transparent)`,
                     }}
                   >
                     <span
-                      className="inline-block h-3 w-3 rounded-[3px] border"
+                      className="inline-block h-3 w-3 rounded-[1px] border"
                       style={{
                         background: `color-mix(in srgb, ${categoryColor[cp.category]} 14%, var(--surface))`,
                         borderColor: categoryColor[cp.category],
@@ -277,7 +277,7 @@ export default function SeatMap({ eventId }) {
 
           <div className="mb-8 flex justify-center">
             <div
-              className="h-2 w-3/4 rounded-full"
+              className="h-1.5 w-3/4"
               style={{
                 background: "linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand) 40%, transparent), transparent)",
                 boxShadow: "0 8px 20px -4px var(--ring)",
@@ -311,7 +311,7 @@ export default function SeatMap({ eventId }) {
                   onClick={() => toggleSeat(seat)}
                   title={`${seat.label} · ${seat.category} · ${formatPrice(priceFor[seat.category])} · ${seat.status}`}
                   style={{ gridColumn: seat.col + 1, gridRow: seat.row, ...seatInlineStyle(seat) }}
-                  className={`flex h-9 w-9 items-center justify-center rounded-t-lg rounded-b-md border text-[10px] font-semibold transition-all ${seatClassName(seat)}`}
+                  className={`flex h-9 w-9 items-center justify-center rounded-[2px] border text-[10px] font-semibold transition-all ${seatClassName(seat)}`}
                 >
                   {seat.label}
                 </button>
@@ -386,7 +386,7 @@ export default function SeatMap({ eventId }) {
         {mySeats.length > 0 && (
           <div>
             <p
-              className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
+              className="mb-3 inline-flex items-center gap-1.5 rounded-[2px] px-3 py-1 text-xs font-semibold"
               style={{
                 background: secondsLeft <= 60 ? "rgba(220,38,38,0.12)" : "color-mix(in srgb, var(--brand) 12%, transparent)",
                 color: secondsLeft <= 60 ? "#dc2626" : "var(--brand)",
@@ -437,7 +437,7 @@ export default function SeatMap({ eventId }) {
 function Legend({ variant, label }) {
   return (
     <span className="flex items-center gap-1.5">
-      <span className="inline-block h-3 w-3 rounded-[3px] border" style={SWATCH_BG[variant]} />
+      <span className="inline-block h-3 w-3 rounded-[1px] border" style={SWATCH_BG[variant]} />
       {label}
     </span>
   );

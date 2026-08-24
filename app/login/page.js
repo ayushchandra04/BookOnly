@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import AuthPanel from "@/components/AuthPanel";
 
 function LoginForm() {
   const router = useRouter();
@@ -38,56 +39,61 @@ function LoginForm() {
   }
 
   return (
-    <div className="mx-auto max-w-sm py-8">
-      <div className="mb-6 text-center">
-        <span
-          className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl text-xl shadow-sm"
-          style={{ background: "linear-gradient(135deg, var(--brand), var(--accent))" }}
-        >
-          🎟️
-        </span>
-        <h1 className="text-xl font-bold">Welcome back</h1>
-        <p className="mt-1 text-sm muted">Log in to continue booking.</p>
-      </div>
+    <AuthPanel
+      stub="Admit one"
+      heading={
+        <>
+          Welcome
+          <br />
+          back.
+        </>
+      }
+      blurb="Log in to pick up where you left off — your held seats and past bookings are waiting."
+      footer={
+        <>
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="font-bold underline" style={{ color: "var(--brand)" }}>
+            Sign up
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <label className="flex flex-col gap-2">
+          <span className="field-label">Email</span>
+          <input
+            required
+            type="email"
+            className="input"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+        </label>
+        <label className="flex flex-col gap-2">
+          <span className="field-label">Password</span>
+          <input
+            required
+            type="password"
+            className="input"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+        </label>
 
-      <div className="card">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1.5">
-            <span className="field-label">Email</span>
-            <input
-              required
-              type="email"
-              className="input"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-          </label>
-          <label className="flex flex-col gap-1.5">
-            <span className="field-label">Password</span>
-            <input
-              required
-              type="password"
-              className="input"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
-          </label>
+        {error && (
+          <p
+            className="border-l-2 py-1 pl-3 text-sm text-red-600 dark:text-red-400"
+            style={{ borderColor: "currentColor" }}
+          >
+            {error}
+          </p>
+        )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
-
-          <button disabled={loading} className="btn-primary w-full" type="submit">
-            {loading ? "Logging in..." : "Log in"}
-          </button>
-        </form>
-      </div>
-
-      <p className="mt-5 text-center text-sm muted">
-        Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium" style={{ color: "var(--brand)" }}>
-          Sign up
-        </Link>
-      </p>
-    </div>
+        <button disabled={loading} className="btn-primary w-full !py-3" type="submit">
+          {loading ? "Logging in…" : "Log in"}
+        </button>
+      </form>
+    </AuthPanel>
   );
 }
 

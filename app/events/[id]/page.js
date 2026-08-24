@@ -15,68 +15,99 @@ export default async function EventDetailPage({ params }) {
   if (!event) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="relative mb-6 overflow-hidden rounded-3xl" style={{ boxShadow: "var(--shadow-lg)" }}>
-        <div className="relative h-64 sm:h-80">
-          <EventPoster title={event.title} posterUrl={event.posterUrl} type={event.type} eager />
+    <div className="mx-auto max-w-5xl">
+      <Link
+        href="/"
+        className="mb-6 inline-block text-[11px] font-bold uppercase tracking-[0.12em] muted transition hover:text-[var(--brand)]"
+      >
+        &larr; All events
+      </Link>
+
+      {/* Poster beside the facts, rather than text stacked on a darkened hero */}
+      <div className="grid gap-8 md:grid-cols-[300px_1fr]">
+        <div>
           <div
-            className="absolute inset-0"
+            className="relative aspect-[3/4] overflow-hidden border-2"
             style={{
-              background:
-                "linear-gradient(to top, rgba(8,8,14,0.95) 0%, rgba(8,8,14,0.6) 40%, rgba(8,8,14,0.15) 100%)",
+              borderColor: "var(--foreground)",
+              borderRadius: "var(--radius-lg)",
+              boxShadow: "var(--shadow-hard)",
             }}
-          />
-          <div className="absolute inset-x-0 bottom-0 p-6">
-            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-              {event.type}
-            </span>
-            <h1 className="mt-3 text-3xl font-bold text-white drop-shadow sm:text-4xl">{event.title}</h1>
-            <p className="mt-1.5 text-sm text-white/75">
-              {event.date} · {event.time} · {event.venueId?.name}
-            </p>
+          >
+            <EventPoster title={event.title} posterUrl={event.posterUrl} type={event.type} eager />
           </div>
+
+          <Link
+            href={`/events/${event._id}/seats`}
+            className="btn-primary mt-5 w-full !py-3.5"
+          >
+            Select seats &rarr;
+          </Link>
         </div>
-      </div>
 
-      {event.description && <p className="mb-6 leading-relaxed muted">{event.description}</p>}
+        <div className="min-w-0">
+          <span className="badge">{event.type}</span>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="card">
-          <h2 className="mb-3 font-semibold">Details</h2>
-          <dl className="grid grid-cols-[70px_1fr] gap-y-3 text-sm">
-            <dt className="field-label">Date</dt>
-            <dd className="font-medium">{event.date}</dd>
-            <dt className="field-label">Time</dt>
-            <dd className="font-medium">{event.time}</dd>
-            <dt className="field-label">Venue</dt>
-            <dd>
-              <span className="font-medium">{event.venueId?.name}</span>
-              <br />
-              <span className="muted">{event.venueId?.address}</span>
-            </dd>
+          <h1 className="mt-4 text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl">
+            {event.title}
+          </h1>
+
+          <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] muted">
+            {event.date} &middot; {event.time} &middot; {event.venueId?.name}
+          </p>
+
+          {event.description && (
+            <p className="mt-6 max-w-prose leading-relaxed muted">{event.description}</p>
+          )}
+
+          {/* Details as a ruled table — closer to a printed listing than a card */}
+          <dl
+            className="mt-8 border-t-2"
+            style={{ borderColor: "var(--foreground)" }}
+          >
+            <Row label="Date" value={event.date} />
+            <Row label="Time" value={event.time} />
+            <Row
+              label="Venue"
+              value={
+                <>
+                  <span className="font-semibold">{event.venueId?.name}</span>
+                  <br />
+                  <span className="muted">{event.venueId?.address}</span>
+                </>
+              }
+            />
           </dl>
-        </div>
 
-        <div className="card">
-          <h2 className="mb-3 font-semibold">Pricing</h2>
-          <ul className="text-sm">
+          <h2 className="mt-10 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--brand)" }}>
+            Pricing
+          </h2>
+          <ul className="mt-3 border-t-2" style={{ borderColor: "var(--foreground)" }}>
             {event.categoryPricing.map((cp) => (
               <li
                 key={cp.category}
-                className="flex items-center justify-between border-b py-2 last:border-0"
+                className="flex items-center justify-between border-b py-3"
                 style={{ borderColor: "var(--border)" }}
               >
-                <span className="badge">{cp.category}</span>
-                <span className="font-semibold">{formatPrice(cp.price)}</span>
+                <span className="text-xs font-bold uppercase tracking-[0.1em]">{cp.category}</span>
+                <span className="font-display text-lg font-bold">{formatPrice(cp.price)}</span>
               </li>
             ))}
           </ul>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <Link href={`/events/${event._id}/seats`} className="btn-primary mt-6 w-full !py-3 sm:w-auto sm:!px-8">
-        Select seats →
-      </Link>
+function Row({ label, value }) {
+  return (
+    <div
+      className="grid grid-cols-[90px_1fr] gap-4 border-b py-3 text-sm"
+      style={{ borderColor: "var(--border)" }}
+    >
+      <dt className="field-label pt-0.5">{label}</dt>
+      <dd>{value}</dd>
     </div>
   );
 }

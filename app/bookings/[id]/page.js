@@ -1,9 +1,9 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { Booking } from "@/lib/models";
 import { generateQrDataUrl } from "@/lib/qrcode";
-import EventPoster from "@/components/EventPoster";
 import { formatPrice } from "@/lib/currency";
 import CancelBookingButton from "@/components/CancelBookingButton";
 
@@ -26,69 +26,100 @@ export default async function BookingDetailPage({ params }) {
   const isCancelled = booking.status === "cancelled";
 
   return (
-    <div className="mx-auto max-w-md py-4">
-      <div className="overflow-hidden rounded-3xl shadow-lg" style={{ boxShadow: "var(--shadow-lg)" }}>
-        <div className="relative h-44 text-white">
-          {booking.eventId && (
-            <EventPoster
-              title={booking.eventId.title}
-              posterUrl={booking.eventId.posterUrl}
-              type={booking.eventId.type}
-              eager
-            />
-          )}
+    <div className="mx-auto max-w-sm py-4">
+      <Link
+        href="/bookings"
+        className="mb-6 inline-block text-[11px] font-bold uppercase tracking-[0.12em] muted transition hover:text-[var(--brand)]"
+      >
+        &larr; All bookings
+      </Link>
+
+      {/* A printed boarding-pass slip: ink header band, punched perforation, stub */}
+      <div
+        className="overflow-hidden border-2"
+        style={{
+          borderColor: "var(--foreground)",
+          borderRadius: "var(--radius-lg)",
+          boxShadow: "var(--shadow-hard)",
+          background: "var(--surface)",
+        }}
+      >
+        <div className="relative p-6" style={{ background: "var(--foreground)" }}>
           <div
-            className="absolute inset-0"
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
             style={{
-              background:
-                "linear-gradient(to top, rgba(8,8,14,0.95) 0%, rgba(8,8,14,0.6) 45%, rgba(8,8,14,0.2) 100%)",
+              backgroundImage:
+                "repeating-linear-gradient(90deg, var(--background) 0 1px, transparent 1px 20px)",
             }}
           />
-          {isCancelled && (
-            <span className="absolute right-5 top-5 rounded-full bg-black/40 px-3 py-1 text-[11px] font-bold uppercase tracking-wide backdrop-blur-sm">
-              Cancelled
-            </span>
-          )}
-          <div className="absolute inset-x-0 bottom-0 p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-white/70">E-Ticket</p>
-            <h1 className="mt-1 text-2xl font-bold drop-shadow">{booking.eventId?.title}</h1>
-            <p className="mt-1 text-sm text-white/80">
-              {booking.eventId?.date} · {booking.eventId?.time}
+          <div className="relative flex items-start justify-between gap-3">
+            <p
+              className="text-[10px] font-bold uppercase tracking-[0.22em]"
+              style={{ color: "var(--brand)" }}
+            >
+              E-Ticket
             </p>
+            {isCancelled && (
+              <span
+                className="border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em]"
+                style={{ borderColor: "rgba(255,255,255,0.45)", color: "#fff", borderRadius: "2px" }}
+              >
+                Cancelled
+              </span>
+            )}
           </div>
+
+          <h1
+            className="relative mt-3 text-2xl font-bold leading-tight tracking-tight"
+            style={{ color: "var(--background)" }}
+          >
+            {booking.eventId?.title}
+          </h1>
+          <p
+            className="relative mt-2 text-[11px] font-bold uppercase tracking-[0.12em]"
+            style={{ color: "color-mix(in srgb, var(--background) 60%, transparent)" }}
+          >
+            {booking.eventId?.date} &middot; {booking.eventId?.time}
+          </p>
         </div>
 
-        <div className="relative p-6" style={{ background: "var(--surface)" }}>
+        {/* Perforation */}
+        <div className="ticket-notch relative">
           <div
-            className="absolute -left-3 top-0 h-6 w-6 rounded-full"
-            style={{ background: "var(--background)" }}
-          />
-          <div
-            className="absolute -right-3 top-0 h-6 w-6 rounded-full"
-            style={{ background: "var(--background)" }}
-          />
-          <div
-            className="absolute left-3 right-3 top-0 border-t-2 border-dashed"
+            className="absolute left-4 right-4 top-0 border-t-2 border-dashed"
             style={{ borderColor: "var(--border)" }}
           />
+        </div>
 
-          <dl className="grid grid-cols-[110px_1fr] gap-y-3 pt-3 text-sm">
-            <dt className="field-label">Seats</dt>
-            <dd className="font-semibold">{booking.seatIds.map((s) => s.label).join(", ")}</dd>
-            <dt className="field-label">Total</dt>
-            <dd className="font-semibold">{formatPrice(booking.totalAmount)}</dd>
-            <dt className="field-label">Status</dt>
-            <dd className="capitalize">
-              <span className={`badge ${isCancelled ? "" : "badge-accent"}`}>{booking.status}</span>
-            </dd>
+        <div className="p-6">
+          <dl>
+            <Row label="Seats" value={booking.seatIds.map((s) => s.label).join(", ")} />
+            <Row label="Total" value={formatPrice(booking.totalAmount)} mono />
+            <Row
+              label="Status"
+              value={
+                <span className={`badge ${isCancelled ? "" : "badge-accent"}`}>{booking.status}</span>
+              }
+            />
           </dl>
 
           {qrDataUrl && (
-            <div className="mt-6 flex flex-col items-center gap-3 border-t pt-6" style={{ borderColor: "var(--border)" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrDataUrl} alt="Booking QR code" width={180} height={180} className="rounded-xl" />
-              <p className="font-mono text-sm font-semibold tracking-wider">{booking.bookingRef}</p>
-              <p className="text-xs muted">Show this code at entry</p>
+            <div
+              className="mt-6 flex flex-col items-center gap-3 border-t-2 border-dashed pt-6"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div
+                className="border-2 p-2"
+                style={{ borderColor: "var(--foreground)", borderRadius: "var(--radius)", background: "#fff" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qrDataUrl} alt="Booking QR code" width={170} height={170} />
+              </div>
+              <p className="font-mono text-sm font-bold tracking-[0.15em]">{booking.bookingRef}</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] muted">
+                Show this code at entry
+              </p>
             </div>
           )}
         </div>
@@ -99,6 +130,18 @@ export default async function BookingDetailPage({ params }) {
           <CancelBookingButton bookingId={String(booking._id)} />
         </div>
       )}
+    </div>
+  );
+}
+
+function Row({ label, value, mono }) {
+  return (
+    <div
+      className="flex items-center justify-between gap-4 border-b py-3 last:border-0"
+      style={{ borderColor: "var(--border)" }}
+    >
+      <dt className="field-label">{label}</dt>
+      <dd className={`text-sm font-bold ${mono ? "font-display text-base" : ""}`}>{value}</dd>
     </div>
   );
 }
