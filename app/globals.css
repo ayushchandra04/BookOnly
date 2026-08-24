@@ -1,30 +1,38 @@
 @import "tailwindcss";
 
+/* A committed dark house — this is a cinema, not a dashboard. No light mode:
+   the palette is the identity, so it does not flip with the OS. */
 :root {
-  /* Warm paper rather than cool grey — the whole palette is built around ink
-     on newsprint, not a tinted white dashboard. */
-  --background: #faf7f2;
-  --foreground: #14110e;
-  --surface: #ffffff;
-  --surface-alt: #f2ece2;
-  --border: rgba(20, 17, 14, 0.16);
-  --muted: #6f665c;
+  --background: #0a0a0c;
+  --surface: #141419;
+  --surface-2: #1c1c23;
+  --foreground: #f2f2f0;
+  --muted: #8b8b96;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.22);
 
-  --brand: #cc2b1d;
-  --brand-hover: #a81f13;
-  --brand-fg: #ffffff;
-  --accent: #0f6f63;
-  --accent-fg: #ffffff;
+  --brand: #c8ff2e;
+  --brand-dim: #a6d61f;
+  --brand-fg: #0a0a0c;
+  --accent: #ff4d6d;
+  --accent-fg: #16050a;
 
-  --ring: rgba(204, 43, 29, 0.3);
+  --ring: rgba(200, 255, 46, 0.35);
 
-  /* Offset shadows, not blurred ones — the edge stays hard so panels read as
-     stacked paper instead of floating glass. */
-  --radius: 4px;
-  --radius-lg: 6px;
-  --shadow-hard: 3px 3px 0 var(--foreground);
-  --shadow-hard-sm: 2px 2px 0 var(--foreground);
-  --shadow-soft: 0 1px 0 var(--border);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --pill: 999px;
+
+  --sidebar-w: 232px;
+  /* Main content sits flush under the mobile top bar; the desktop rail is
+     fixed, so content has to be pushed clear of it at lg and up. */
+  --main-offset: 0px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --main-offset: var(--sidebar-w);
+  }
 }
 
 @theme inline {
@@ -34,131 +42,129 @@
   --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #12100e;
-    --foreground: #f5f1ea;
-    --surface: #1b1815;
-    --surface-alt: #241f1b;
-    --border: rgba(245, 241, 234, 0.16);
-    --muted: #a1988c;
-
-    --brand: #ff5c42;
-    --brand-hover: #ff7a63;
-    --brand-fg: #1a0b07;
-    --accent: #4ecdc0;
-    --accent-fg: #06231f;
-
-    --ring: rgba(255, 92, 66, 0.35);
-    --shadow-hard: 3px 3px 0 rgba(0, 0, 0, 0.7);
-    --shadow-hard-sm: 2px 2px 0 rgba(0, 0, 0, 0.7);
-  }
-}
-
 * {
   border-color: var(--border);
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  /* Faint ruled grid instead of colour blobs — keeps the paper metaphor and
-     reads as texture rather than decoration. */
-  background-image: linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 64px 64px, 64px 64px;
-  background-attachment: fixed;
+}
+
+/* A single soft spill of brand light from the top-left, like a projector beam.
+   Fixed so it never scrolls away. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+      70rem 40rem at 8% -10%,
+      color-mix(in srgb, var(--brand) 9%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(50rem 30rem at 100% 0%, rgba(255, 77, 109, 0.07), transparent 55%);
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
 h1,
-h2,
-h3,
-.font-display {
+h2 {
   font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-weight: 400;
 }
 
 @layer components {
   .input {
-    @apply w-full border bg-[var(--surface)] px-3.5 py-2.5 text-sm outline-none transition;
-    border-radius: var(--radius);
-    border-color: var(--border);
+    @apply w-full px-4 py-3 text-sm outline-none transition;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+  }
+  .input::placeholder {
+    color: var(--muted);
   }
   .input:focus {
     border-color: var(--brand);
     box-shadow: 0 0 0 3px var(--ring);
   }
 
+  /* Pills, filled with brand light — the one loud element on every screen. */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-1.5 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] transition-all disabled:cursor-not-allowed disabled:opacity-50;
-    border-radius: var(--radius);
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-40;
+    border-radius: var(--pill);
     background: var(--brand);
-    border-color: var(--brand);
     color: var(--brand-fg);
-    box-shadow: var(--shadow-hard-sm);
+    border: 1px solid var(--brand);
   }
   .btn-primary:not(:disabled):hover {
-    background: var(--brand-hover);
-    border-color: var(--brand-hover);
-    transform: translate(-1px, -1px);
-    box-shadow: var(--shadow-hard);
-  }
-  .btn-primary:not(:disabled):active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
+    background: var(--brand-dim);
+    border-color: var(--brand-dim);
+    box-shadow: 0 0 24px -4px var(--ring);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-1.5 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] transition-all disabled:opacity-50;
-    border-radius: var(--radius);
-    border-color: var(--foreground);
-    background: var(--surface);
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-semibold transition-all disabled:opacity-40;
+    border-radius: var(--pill);
+    background: transparent;
+    border: 1px solid var(--border-strong);
     color: var(--foreground);
   }
   .btn-secondary:not(:disabled):hover {
-    transform: translate(-1px, -1px);
-    box-shadow: var(--shadow-hard-sm);
-  }
-  .btn-secondary:not(:disabled):active {
-    transform: translate(0, 0);
-    box-shadow: none;
+    border-color: var(--brand);
+    color: var(--brand);
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-1.5 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-red-600 transition hover:bg-red-500/10 disabled:opacity-50 dark:text-red-400;
-    border-radius: var(--radius);
-    border-color: rgba(220, 38, 38, 0.5);
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-semibold transition disabled:opacity-40;
+    border-radius: var(--pill);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    color: var(--accent);
+  }
+  .btn-danger:not(:disabled):hover {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
   }
 
   .card {
-    @apply border p-5 transition-all;
-    border-radius: var(--radius-lg);
+    @apply p-5 transition-all;
+    border-radius: var(--radius);
     background: var(--surface);
-    border-color: var(--border);
+    border: 1px solid var(--border);
   }
 
   .card-hover:hover {
-    border-color: var(--foreground);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-hard);
+    border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+    background: var(--surface-2);
   }
 
   .badge {
-    @apply inline-flex items-center gap-1 border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em];
-    border-radius: 2px;
-    border-color: var(--brand);
-    background: transparent;
+    @apply inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em];
+    border-radius: var(--pill);
+    background: color-mix(in srgb, var(--brand) 14%, transparent);
     color: var(--brand);
   }
 
   .badge-accent {
-    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
     color: var(--accent);
   }
 
   .field-label {
-    @apply text-xs font-bold uppercase tracking-[0.08em];
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em];
     color: var(--muted);
   }
 
@@ -166,29 +172,9 @@ h3,
     color: var(--muted);
   }
 
-  /* Perforated edge used on ticket-styled panels. */
-  .ticket-notch {
-    position: relative;
-  }
-  .ticket-notch::before,
-  .ticket-notch::after {
-    content: "";
-    position: absolute;
-    left: -7px;
-    width: 14px;
-    height: 14px;
-    border-radius: 9999px;
-    background: var(--background);
-    border: 1px solid var(--border);
-  }
-  .ticket-notch::before {
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .ticket-notch::after {
-    right: -7px;
-    left: auto;
-    top: 50%;
-    transform: translateY(-50%);
+  /* Thin brand rule used to open a section instead of a heavy heading border. */
+  .rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--brand), transparent 45%);
   }
 }

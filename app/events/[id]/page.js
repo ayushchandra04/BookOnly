@@ -15,56 +15,51 @@ export default async function EventDetailPage({ params }) {
   if (!event) notFound();
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div>
       <Link
         href="/"
-        className="mb-6 inline-block text-[11px] font-bold uppercase tracking-[0.12em] muted transition hover:text-[var(--brand)]"
+        className="mb-8 inline-block text-[11px] font-semibold uppercase tracking-[0.16em] muted transition hover:text-[var(--brand)]"
       >
-        &larr; All events
+        &larr; Now showing
       </Link>
 
-      {/* Poster beside the facts, rather than text stacked on a darkened hero */}
-      <div className="grid gap-8 md:grid-cols-[300px_1fr]">
-        <div>
+      {/* Full-bleed banner with the title sitting on the artwork's fade */}
+      <div
+        className="relative overflow-hidden"
+        style={{ borderRadius: "var(--radius)", border: "1px solid var(--border)" }}
+      >
+        <div className="relative h-56 sm:h-72">
+          <EventPoster title={event.title} posterUrl={event.posterUrl} type={event.type} eager />
           <div
-            className="relative aspect-[3/4] overflow-hidden border-2"
+            className="absolute inset-0"
             style={{
-              borderColor: "var(--foreground)",
-              borderRadius: "var(--radius-lg)",
-              boxShadow: "var(--shadow-hard)",
+              background:
+                "linear-gradient(0deg, var(--background) 4%, rgba(10,10,12,0.55) 55%, rgba(10,10,12,0.2) 100%)",
             }}
-          >
-            <EventPoster title={event.title} posterUrl={event.posterUrl} type={event.type} eager />
-          </div>
-
-          <Link
-            href={`/events/${event._id}/seats`}
-            className="btn-primary mt-5 w-full !py-3.5"
-          >
-            Select seats &rarr;
-          </Link>
+          />
         </div>
 
-        <div className="min-w-0">
+        <div className="relative -mt-16 px-6 pb-7 sm:px-10">
           <span className="badge">{event.type}</span>
-
-          <h1 className="mt-4 text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl">
-            {event.title}
-          </h1>
-
-          <p className="mt-4 text-xs font-bold uppercase tracking-[0.12em] muted">
+          <h1 className="mt-4 text-4xl leading-[0.95] sm:text-6xl">{event.title}</h1>
+          <p className="mt-3 text-sm muted">
             {event.date} &middot; {event.time} &middot; {event.venueId?.name}
           </p>
+        </div>
+      </div>
 
+      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
+        <div>
           {event.description && (
-            <p className="mt-6 max-w-prose leading-relaxed muted">{event.description}</p>
+            <p className="max-w-prose text-[15px] leading-relaxed muted">{event.description}</p>
           )}
 
-          {/* Details as a ruled table — closer to a printed listing than a card */}
-          <dl
-            className="mt-8 border-t-2"
-            style={{ borderColor: "var(--foreground)" }}
-          >
+          <p className="mt-10 mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] muted">
+            Details
+          </p>
+          <div className="rule mb-4" />
+
+          <dl>
             <Row label="Date" value={event.date} />
             <Row label="Time" value={event.time} />
             <Row
@@ -78,23 +73,32 @@ export default async function EventDetailPage({ params }) {
               }
             />
           </dl>
-
-          <h2 className="mt-10 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--brand)" }}>
-            Pricing
-          </h2>
-          <ul className="mt-3 border-t-2" style={{ borderColor: "var(--foreground)" }}>
-            {event.categoryPricing.map((cp) => (
-              <li
-                key={cp.category}
-                className="flex items-center justify-between border-b py-3"
-                style={{ borderColor: "var(--border)" }}
-              >
-                <span className="text-xs font-bold uppercase tracking-[0.1em]">{cp.category}</span>
-                <span className="font-display text-lg font-bold">{formatPrice(cp.price)}</span>
-              </li>
-            ))}
-          </ul>
         </div>
+
+        {/* Pricing and the CTA travel together in a sticky rail */}
+        <aside className="lg:sticky lg:top-8 lg:self-start">
+          <div className="card">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] muted">Tickets</p>
+            <ul className="mt-4">
+              {event.categoryPricing.map((cp) => (
+                <li
+                  key={cp.category}
+                  className="flex items-center justify-between border-b py-3 last:border-0"
+                  style={{ borderColor: "var(--border)" }}
+                >
+                  <span className="text-sm font-medium">{cp.category}</span>
+                  <span className="font-display text-xl" style={{ color: "var(--brand)" }}>
+                    {formatPrice(cp.price)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <Link href={`/events/${event._id}/seats`} className="btn-primary mt-5 w-full">
+              Select seats &rarr;
+            </Link>
+          </div>
+        </aside>
       </div>
     </div>
   );
@@ -103,7 +107,7 @@ export default async function EventDetailPage({ params }) {
 function Row({ label, value }) {
   return (
     <div
-      className="grid grid-cols-[90px_1fr] gap-4 border-b py-3 text-sm"
+      className="grid grid-cols-[100px_1fr] gap-4 border-b py-3.5 text-sm"
       style={{ borderColor: "var(--border)" }}
     >
       <dt className="field-label pt-0.5">{label}</dt>

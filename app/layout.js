@@ -1,14 +1,13 @@
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 import "./globals.css";
-import NavBar from "@/components/NavBar";
-import Footer from "@/components/Footer";
+import Sidebar from "@/components/Sidebar";
 
-// Space Grotesk carries the headings — its squared-off terminals suit the
-// box-office/print feel better than a neutral grotesque.
-const display = Space_Grotesk({
+// Anton for display: a condensed poster face, closer to a marquee board than
+// to UI type. Inter carries everything that has to be read rather than seen.
+const display = Anton({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400"],
 });
 
 const body = Inter({
@@ -27,10 +26,16 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <NavBar />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
-        <Footer />
+      <body className="min-h-full">
+        <Sidebar />
+        {/* Offset by the rail on desktop; full width underneath the top bar on
+            mobile. Wide gutters rather than a narrow centred column. */}
+        <main
+          className="relative z-10 px-4 py-8 sm:px-8 lg:py-12"
+          style={{ marginInlineStart: "var(--main-offset, 0px)" }}
+        >
+          <div className="mx-auto w-full max-w-[1180px]">{children}</div>
+        </main>
       </body>
     </html>
   );

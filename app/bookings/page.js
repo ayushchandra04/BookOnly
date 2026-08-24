@@ -19,87 +19,68 @@ export default async function BookingsPage() {
     .lean();
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <div
-        className="mb-7 flex items-end justify-between gap-4 border-b-2 pb-3"
-        style={{ borderColor: "var(--foreground)" }}
-      >
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--brand)" }}>
-            Your tickets
-          </p>
-          <h1 className="mt-1.5 text-3xl font-bold tracking-tight">My bookings</h1>
-        </div>
-        <span className="shrink-0 text-[11px] font-bold uppercase tracking-[0.1em] muted">
-          {String(bookings.length).padStart(2, "0")}{" "}
-          {bookings.length === 1 ? "ticket" : "tickets"}
-        </span>
-      </div>
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--brand)" }}>
+        {bookings.length} {bookings.length === 1 ? "ticket" : "tickets"}
+      </p>
+      <h1 className="mt-3 text-5xl leading-[0.92] sm:text-6xl">My tickets</h1>
+      <div className="rule my-8" />
 
       {bookings.length === 0 ? (
         <div
-          className="border-2 border-dashed py-20 text-center"
-          style={{ borderColor: "var(--border)", borderRadius: "var(--radius-lg)" }}
+          className="py-24 text-center"
+          style={{ borderRadius: "var(--radius)", border: "1px dashed var(--border-strong)" }}
         >
-          <p className="font-display text-lg font-bold">Nothing booked yet</p>
+          <p className="font-display text-xl">No tickets yet</p>
           <p className="mt-2 text-sm muted">
-            <Link href="/" className="font-bold underline" style={{ color: "var(--brand)" }}>
-              Browse events
+            <Link href="/" className="font-semibold" style={{ color: "var(--brand)" }}>
+              Browse what&apos;s on
             </Link>{" "}
             to get started.
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {bookings.map((b) => (
-            <Link
-              key={b._id}
-              href={`/bookings/${b._id}`}
-              className="group flex items-stretch overflow-hidden border-2 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-[var(--foreground)]"
-              style={{
-                borderColor: "var(--border)",
-                borderRadius: "var(--radius-lg)",
-                background: "var(--surface)",
-              }}
-            >
-              <div className="w-16 shrink-0 sm:w-20">
-                {b.eventId && (
-                  <EventPoster
-                    title={b.eventId.title}
-                    posterUrl={b.eventId.posterUrl}
-                    type={b.eventId.type}
-                  />
-                )}
-              </div>
-
-              <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
-                <p className="font-display text-base font-bold leading-snug">
-                  {b.eventId?.title ?? "Event"}
-                </p>
-                <p className="mt-1 text-xs muted">
-                  {b.eventId?.date} &middot; {b.eventId?.time}
-                </p>
-                <p className="mt-2 text-xs">
-                  <span className="field-label">Seats </span>
-                  <span className="font-semibold">{b.seatIds.map((s) => s.label).join(", ")}</span>
-                </p>
-              </div>
-
-              {/* Ref + status live on a perforated stub, like a real tear-off */}
-              <div
-                className="flex w-28 shrink-0 flex-col items-center justify-center gap-2 border-l-2 border-dashed p-3 text-center sm:w-36"
-                style={{ borderColor: "var(--border)" }}
+            <li key={b._id}>
+              <Link
+                href={`/bookings/${b._id}`}
+                className="card card-hover flex h-full items-center gap-4 !p-4"
               >
-                <span
-                  className={`badge ${b.status === "confirmed" ? "badge-accent" : ""}`}
+                <div
+                  className="h-20 w-14 shrink-0 overflow-hidden"
+                  style={{ borderRadius: "8px" }}
                 >
+                  {b.eventId && (
+                    <EventPoster
+                      title={b.eventId.title}
+                      posterUrl={b.eventId.posterUrl}
+                      type={b.eventId.type}
+                    />
+                  )}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-display text-base leading-tight">
+                    {b.eventId?.title ?? "Event"}
+                  </p>
+                  <p className="mt-1.5 truncate text-xs muted">
+                    {b.eventId?.date} &middot; {b.eventId?.time}
+                  </p>
+                  <p className="mt-1 truncate text-xs">
+                    <span className="muted">Seats </span>
+                    <span className="font-semibold">{b.seatIds.map((s) => s.label).join(", ")}</span>
+                  </p>
+                  <p className="mt-2 font-mono text-[10px] muted">{b.bookingRef}</p>
+                </div>
+
+                <span className={`badge shrink-0 ${b.status === "confirmed" ? "" : "badge-accent"}`}>
                   {b.status}
                 </span>
-                <span className="font-mono text-[10px] leading-tight muted">{b.bookingRef}</span>
-              </div>
-            </Link>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
