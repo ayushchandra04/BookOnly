@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f7fb;
+  --foreground: #16161d;
+  --surface: #ffffff;
+  --border: rgba(17, 17, 26, 0.09);
+  --muted: #6b6b7a;
+
+  --brand: #6d28d9;
+  --brand-hover: #5b21b6;
+  --brand-fg: #ffffff;
+  --accent: #f59e0b;
+  --accent-fg: #1a1206;
+
+  --ring: rgba(109, 40, 217, 0.35);
+  --shadow-sm: 0 1px 2px rgba(16, 16, 30, 0.04), 0 1px 1px rgba(16, 16, 30, 0.03);
+  --shadow-md: 0 8px 24px -8px rgba(16, 16, 30, 0.18), 0 2px 6px -2px rgba(16, 16, 30, 0.08);
+  --shadow-lg: 0 24px 60px -16px rgba(16, 16, 30, 0.28), 0 8px 20px -6px rgba(16, 16, 30, 0.12);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b0b12;
+    --foreground: #f1f1f6;
+    --surface: #15151f;
+    --border: rgba(255, 255, 255, 0.08);
+    --muted: #9797a8;
+
+    --brand: #a78bfa;
+    --brand-hover: #c4b5fd;
+    --brand-fg: #16091f;
+    --accent: #fbbf24;
+    --accent-fg: #1a1206;
+
+    --ring: rgba(167, 139, 250, 0.4);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.55), 0 2px 6px -2px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 60px -16px rgba(0, 0, 0, 0.65), 0 8px 20px -6px rgba(0, 0, 0, 0.4);
+  }
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background-image: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 40%),
+    radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 35%);
+  background-attachment: fixed;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border bg-[var(--surface)] px-3.5 py-2.5 text-sm outline-none transition;
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .input:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50;
+    background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 70%, #ec4899));
+    color: var(--brand-fg);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-primary:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-primary:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50;
+    border-color: var(--border);
+    background: var(--surface);
+  }
+  .btn-secondary:not(:disabled):hover {
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-500/10 disabled:opacity-50 dark:text-red-400;
+  }
+
+  .card {
+    @apply rounded-2xl border p-5 transition;
+    background: var(--surface);
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide;
+    background: color-mix(in srgb, var(--brand) 12%, transparent);
+    color: var(--brand);
+  }
+
+  .badge-accent {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: color-mix(in srgb, var(--accent) 65%, black);
+  }
+
+  .field-label {
+    @apply text-sm font-medium;
+    color: var(--muted);
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+}
