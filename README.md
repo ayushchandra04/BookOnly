@@ -1,4 +1,4 @@
-# Bookify
+# BookOnly
 
 A movie/concert ticket booking platform: visual seat maps with real-time
 status, TTL-based seat holds with auto-release, a waitlist with automatic

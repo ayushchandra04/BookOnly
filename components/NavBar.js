@@ -28,31 +28,37 @@ export default function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b backdrop-blur-lg" style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--background) 75%, transparent)" }}>
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-        <Link href="/" className="flex items-center gap-2 text-[15px] font-bold tracking-tight">
+    <header
+      className="sticky top-0 z-50 border-b-2"
+      style={{ borderColor: "var(--foreground)", background: "var(--background)" }}
+    >
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+        <Link href="/" className="flex items-center gap-2.5">
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-base"
-            style={{ background: "linear-gradient(135deg, var(--brand), var(--accent))" }}
+            className="flex h-8 w-8 items-center justify-center text-sm font-bold"
+            style={{
+              background: "var(--brand)",
+              color: "var(--brand-fg)",
+              borderRadius: "var(--radius)",
+              fontFamily: "var(--font-display)",
+            }}
           >
-            🎟️
+            B
           </span>
-          <span>Book<span style={{ color: "var(--brand)" }}>ify</span></span>
+          <span className="font-display text-[17px] font-bold tracking-tight">
+            Book<span style={{ color: "var(--brand)" }}>Only</span>
+          </span>
         </Link>
 
-        <div className="flex items-center gap-5 text-sm">
-          <Link href="/" className="font-medium transition hover:opacity-70">
-            Home
-          </Link>
+        <div className="flex items-center gap-5 text-xs font-bold uppercase tracking-[0.08em]">
+          <NavLink href="/">Home</NavLink>
 
           {user === undefined && null}
 
           {user === null && (
             <>
-              <Link href="/login" className="font-medium transition hover:opacity-70">
-                Log in
-              </Link>
-              <Link href="/register" className="btn-primary !px-4 !py-2 text-sm">
+              <NavLink href="/login">Log in</NavLink>
+              <Link href="/register" className="btn-primary !px-4 !py-2">
                 Sign up
               </Link>
             </>
@@ -60,27 +66,21 @@ export default function NavBar() {
 
           {user && user.role === "customer" && (
             <>
-              <Link href="/bookings" className="font-medium transition hover:opacity-70">
-                My Bookings
-              </Link>
+              <NavLink href="/bookings">My Bookings</NavLink>
               <UserMenu user={user} onLogout={handleLogout} />
             </>
           )}
 
           {user && user.role === "organiser" && (
             <>
-              <Link href="/organiser/events" className="font-medium transition hover:opacity-70">
-                My Events
-              </Link>
+              <NavLink href="/organiser/events">My Events</NavLink>
               <UserMenu user={user} onLogout={handleLogout} />
             </>
           )}
 
           {user && user.role === "admin" && (
             <>
-              <Link href="/admin/venues" className="font-medium transition hover:opacity-70">
-                Venues
-              </Link>
+              <NavLink href="/admin/venues">Venues</NavLink>
               <UserMenu user={user} onLogout={handleLogout} />
             </>
           )}
@@ -90,19 +90,34 @@ export default function NavBar() {
   );
 }
 
+function NavLink({ href, children }) {
+  return (
+    <Link
+      href={href}
+      className="border-b-2 border-transparent pb-0.5 transition hover:border-[var(--brand)]"
+    >
+      {children}
+    </Link>
+  );
+}
+
 function UserMenu({ user, onLogout }) {
   return (
     <div className="flex items-center gap-3">
       <span className="hidden items-center gap-2 sm:flex">
         <span
-          className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold"
-          style={{ background: "var(--brand)", color: "var(--brand-fg)" }}
+          className="flex h-6 w-6 items-center justify-center text-[11px] font-bold"
+          style={{
+            background: "var(--foreground)",
+            color: "var(--background)",
+            borderRadius: "var(--radius)",
+          }}
         >
           {user.name?.[0]?.toUpperCase()}
         </span>
-        <span className="muted">{user.name}</span>
+        <span className="muted normal-case tracking-normal">{user.name}</span>
       </span>
-      <button onClick={onLogout} className="btn-secondary !px-3 !py-1.5 text-xs">
+      <button onClick={onLogout} className="btn-secondary !px-3 !py-1.5 !text-[10px]">
         Log out
       </button>
     </div>

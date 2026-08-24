@@ -1,4 +1,4 @@
-# System Design — Bookify
+# System Design — BookOnly
 
 ## Seat hold & TTL mechanism
 

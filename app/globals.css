@@ -1,49 +1,57 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f7fb;
-  --foreground: #16161d;
+  /* Warm paper rather than cool grey — the whole palette is built around ink
+     on newsprint, not a tinted white dashboard. */
+  --background: #faf7f2;
+  --foreground: #14110e;
   --surface: #ffffff;
-  --border: rgba(17, 17, 26, 0.09);
-  --muted: #6b6b7a;
+  --surface-alt: #f2ece2;
+  --border: rgba(20, 17, 14, 0.16);
+  --muted: #6f665c;
 
-  --brand: #6d28d9;
-  --brand-hover: #5b21b6;
+  --brand: #cc2b1d;
+  --brand-hover: #a81f13;
   --brand-fg: #ffffff;
-  --accent: #f59e0b;
-  --accent-fg: #1a1206;
+  --accent: #0f6f63;
+  --accent-fg: #ffffff;
 
-  --ring: rgba(109, 40, 217, 0.35);
-  --shadow-sm: 0 1px 2px rgba(16, 16, 30, 0.04), 0 1px 1px rgba(16, 16, 30, 0.03);
-  --shadow-md: 0 8px 24px -8px rgba(16, 16, 30, 0.18), 0 2px 6px -2px rgba(16, 16, 30, 0.08);
-  --shadow-lg: 0 24px 60px -16px rgba(16, 16, 30, 0.28), 0 8px 20px -6px rgba(16, 16, 30, 0.12);
+  --ring: rgba(204, 43, 29, 0.3);
+
+  /* Offset shadows, not blurred ones — the edge stays hard so panels read as
+     stacked paper instead of floating glass. */
+  --radius: 4px;
+  --radius-lg: 6px;
+  --shadow-hard: 3px 3px 0 var(--foreground);
+  --shadow-hard-sm: 2px 2px 0 var(--foreground);
+  --shadow-soft: 0 1px 0 var(--border);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b0b12;
-    --foreground: #f1f1f6;
-    --surface: #15151f;
-    --border: rgba(255, 255, 255, 0.08);
-    --muted: #9797a8;
+    --background: #12100e;
+    --foreground: #f5f1ea;
+    --surface: #1b1815;
+    --surface-alt: #241f1b;
+    --border: rgba(245, 241, 234, 0.16);
+    --muted: #a1988c;
 
-    --brand: #a78bfa;
-    --brand-hover: #c4b5fd;
-    --brand-fg: #16091f;
-    --accent: #fbbf24;
-    --accent-fg: #1a1206;
+    --brand: #ff5c42;
+    --brand-hover: #ff7a63;
+    --brand-fg: #1a0b07;
+    --accent: #4ecdc0;
+    --accent-fg: #06231f;
 
-    --ring: rgba(167, 139, 250, 0.4);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.55), 0 2px 6px -2px rgba(0, 0, 0, 0.35);
-    --shadow-lg: 0 24px 60px -16px rgba(0, 0, 0, 0.65), 0 8px 20px -6px rgba(0, 0, 0, 0.4);
+    --ring: rgba(255, 92, 66, 0.35);
+    --shadow-hard: 3px 3px 0 rgba(0, 0, 0, 0.7);
+    --shadow-hard-sm: 2px 2px 0 rgba(0, 0, 0, 0.7);
   }
 }
 
@@ -54,17 +62,28 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  background-image: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 40%),
-    radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 35%);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  /* Faint ruled grid instead of colour blobs — keeps the paper metaphor and
+     reads as texture rather than decoration. */
+  background-image: linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 64px 64px, 64px 64px;
   background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 @layer components {
   .input {
-    @apply w-full rounded-lg border bg-[var(--surface)] px-3.5 py-2.5 text-sm outline-none transition;
+    @apply w-full border bg-[var(--surface)] px-3.5 py-2.5 text-sm outline-none transition;
+    border-radius: var(--radius);
     border-color: var(--border);
-    box-shadow: var(--shadow-sm);
   }
   .input:focus {
     border-color: var(--brand);
@@ -72,63 +91,104 @@ body {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50;
-    background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 70%, #ec4899));
+    @apply inline-flex items-center justify-center gap-1.5 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] transition-all disabled:cursor-not-allowed disabled:opacity-50;
+    border-radius: var(--radius);
+    background: var(--brand);
+    border-color: var(--brand);
     color: var(--brand-fg);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-hard-sm);
   }
   .btn-primary:not(:disabled):hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard);
   }
   .btn-primary:not(:disabled):active {
-    transform: translateY(0);
+    transform: translate(1px, 1px);
+    box-shadow: none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50;
-    border-color: var(--border);
+    @apply inline-flex items-center justify-center gap-1.5 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] transition-all disabled:opacity-50;
+    border-radius: var(--radius);
+    border-color: var(--foreground);
     background: var(--surface);
+    color: var(--foreground);
   }
   .btn-secondary:not(:disabled):hover {
-    border-color: var(--brand);
-    color: var(--brand);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-sm);
+  }
+  .btn-secondary:not(:disabled):active {
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-500/10 disabled:opacity-50 dark:text-red-400;
+    @apply inline-flex items-center justify-center gap-1.5 border px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-red-600 transition hover:bg-red-500/10 disabled:opacity-50 dark:text-red-400;
+    border-radius: var(--radius);
+    border-color: rgba(220, 38, 38, 0.5);
   }
 
   .card {
-    @apply rounded-2xl border p-5 transition;
+    @apply border p-5 transition-all;
+    border-radius: var(--radius-lg);
     background: var(--surface);
     border-color: var(--border);
-    box-shadow: var(--shadow-sm);
   }
 
   .card-hover:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--brand) 35%, var(--border));
+    border-color: var(--foreground);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
   }
 
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide;
-    background: color-mix(in srgb, var(--brand) 12%, transparent);
+    @apply inline-flex items-center gap-1 border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em];
+    border-radius: 2px;
+    border-color: var(--brand);
+    background: transparent;
     color: var(--brand);
   }
 
   .badge-accent {
-    background: color-mix(in srgb, var(--accent) 18%, transparent);
-    color: color-mix(in srgb, var(--accent) 65%, black);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .field-label {
-    @apply text-sm font-medium;
+    @apply text-xs font-bold uppercase tracking-[0.08em];
     color: var(--muted);
   }
 
   .muted {
     color: var(--muted);
+  }
+
+  /* Perforated edge used on ticket-styled panels. */
+  .ticket-notch {
+    position: relative;
+  }
+  .ticket-notch::before,
+  .ticket-notch::after {
+    content: "";
+    position: absolute;
+    left: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    background: var(--background);
+    border: 1px solid var(--border);
+  }
+  .ticket-notch::before {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .ticket-notch::after {
+    right: -7px;
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
